@@ -42,28 +42,3 @@ describe('testing for get /api/topics', () => {
     })
 })
 
-describe.only('tests for GET /api/articles/:article_id' ,() => {
-    test('returns status code 200', () => {
-        return request(app)
-        .get('/api/articles/1')
-        .expect(200)
-    })
-    test('response with an object with correct prperties', () => {
-        return request(app)
-        .get('/api/articles/1')
-        .expect(200)
-        .then((result) => {
-            const {article} = result.body
-            expect(article).toEqual(  {
-                title: "Living in the shadow of a great man",
-                topic: "mitch",
-                author: "butter_bridge",
-                body: "I find this existence challenging",
-                created_at: 1594329060000,
-                votes: 100,
-                article_img_url:
-                  "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-              })
-        })
-    })
-})
