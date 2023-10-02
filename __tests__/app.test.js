@@ -41,3 +41,22 @@ describe('testing for get /api/topics', () => {
         })
     })
 })
+
+describe('tests for get /api', () => {
+    test('returns status code 200', () => {
+        return request(app)
+        .get('/api')
+        .expect(200)
+    })
+    test('returns an object of available endpoints and their descriptions', () => {
+        return request(app)
+        .get('/api')
+        .expect(200)
+        .then((result) => {
+            const {endpoints} = result.body
+            expect(typeof endpoints).toBe('object')
+            //expect(Object.keys(endpoints).length).toBe(3)
+            expect(endpoints['GET /api/topics'].description).toBe('serves an array of all topics')               
+        })
+    })
+})
