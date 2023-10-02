@@ -42,3 +42,12 @@ describe('testing for get /api/topics', () => {
     })
 })
 
+describe('testing for get /api/articles/:article_id', () => {
+    test('returns status code 200 and responds with correct article object', () => {
+        return request(app)
+        .get('/api/articles/1')
+        .expect(200)
+        .then({body})
+    })
+})
+
