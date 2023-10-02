@@ -63,9 +63,9 @@ describe('testing for get /api/articles/:article_id', () => {
     test('when given an article id that is not in the database, returns status code 404 not found and responds with error message', () => {
         return request(app)
         .get('/api/articles/999')
-        .expect(400)
+        .expect(404)
         .then(({body}) => {
-            expect(body.message).toBe('Bad request')
+            expect(body.message).toBe('Article id not found')
         })
     })
 })
