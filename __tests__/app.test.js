@@ -57,3 +57,33 @@ describe('tests for get /api', () => {
         expect(endpoints['GET /api/topics'].description).toBe('serves an array of all topics');
     });
 });
+
+
+describe('testing for get /api/articles/:article_id', () => {
+    test('returns status code 200 and responds with correct article object', () => {
+        return request(app)
+        .get('/api/articles/1')
+        .expect(200)
+        .then((result) => {
+            const {article} = result.body
+            expect(article).toEqual({"article_id": 1, "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700", "author": "butter_bridge", "body": "I find this existence challenging", "created_at": "2020-07-09T20:11:00.000Z", "title": "Living in the shadow of a great man", "topic": "mitch", "votes": 100})
+            })
+    })
+    test('given an invalid article_id, returns status code 400 bad request and responds with error message', () => {
+        return request(app)
+        .get('/api/articles/invalidArticleID')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.message).toBe('Bad request')
+        })
+    })
+    test('when given an article id that is not in the database, returns status code 404 not found and responds with error message', () => {
+        return request(app)
+        .get('/api/articles/999')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.message).toBe('Article id not found')
+        })
+    })
+})
+
