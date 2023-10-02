@@ -15,6 +15,7 @@ exports.handleSQLErrors = (err,req,res,next)=>{
         }
         res.status(errCodes[err.code].status).send({message:errCodes[err.code].msg})
     }
+    else next(err)
 }
 
 exports.handleMispelledPath = (req,res,next)=>{
