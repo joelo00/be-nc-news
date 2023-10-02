@@ -47,7 +47,7 @@ describe('testing for get /api/articles/:article_id', () => {
         return request(app)
         .get('/api/articles/1')
         .expect(200)
-        .then({body})
+        //.then({body})
     })
 })
 
