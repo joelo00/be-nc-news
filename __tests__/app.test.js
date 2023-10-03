@@ -3,8 +3,9 @@ const db = require("../db/connection.js");
 const { app } = require("../app.js")
 const seed = require("../db/seeds/seed.js");
 const data = require("../db/data/test-data");
-const {readFile} = require('fs/promises');
+ const {readFile} = require('fs/promises');
 const { log } = require("console");
+const { expect } = require("@jest/globals");
 
 beforeEach(() => {
   return seed(data);
@@ -74,7 +75,7 @@ describe('testing for get /api/articles/:article_id', () => {
         .get('/api/articles/invalidArticleID')
         .expect(400)
         .then(({body}) => {
-            expect(body.message).toBe('Bad request')
+            expect(body.message).toBe('Bad Request')
         })
     })
     test('when given an article id that is not in the database, returns status code 404 not found and responds with error message', () => {
@@ -83,6 +84,55 @@ describe('testing for get /api/articles/:article_id', () => {
         .expect(404)
         .then(({body}) => {
             expect(body.message).toBe('Article id not found')
+        })
+    })
+})
+
+describe('tests for GET /api/articles/:article_id/comments.', () => {
+    test('returns status code 200 and responds with an array of comments for the given article_id', async () => {
+        const response = await request(app).get('/api/articles/1/comments').expect(200);
+        const {comments} = response.body
+        expect(comments.length).toBe(11)
+        comments.forEach((comment) => {
+            expect(comment).toEqual(expect.objectContaining({
+                comment_id: expect.any(Number),
+                votes: expect.any(Number),
+                created_at: expect.any(String),
+            }))
+        })
+    })
+    test('should return comments sorted by created_at in descending order by default', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then((result) => {
+            const {comments} = result.body
+
+            expect(comments).toBeSortedBy('created_at', {descending: true})
+        })
+    })
+    test('given an invalid article_id, returns status code 400 bad request and responds with error message', () => {
+        return request(app)
+        .get('/api/articles/invalidArticleID/comments')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.message).toBe('Bad Request')
+        })
+    })
+    test('when given an article id that is not in the database, returns status code 404 not found and responds with error message', () => {
+        return request(app)
+        .get('/api/articles/999/comments')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.message).toBe('Article id not found')
+        })
+    })
+    test('when given a valid article id which has no comments, returns status code 200 and responds with an empty array', () => {
+        return request(app)
+        .get('/api/articles/2/comments')
+        .expect(200)
+        .then(({body}) => {
+            expect(body.comments).toEqual([])
         })
     })
 })
