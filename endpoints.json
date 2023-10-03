@@ -26,9 +26,7 @@
       ]
     }
   },
-
-  "GET /api/articles/:article_id": {"description" :"serves an article by its id", "queries": [], "exampleResponse": {"article": {"title": "Seafood substitutions are increasing", "topic": "cooking", "author": "weegembump", "body": "Text from the article..", "created_at": "2018-05-30T15:59:13.341Z", "votes": 0, "comment_count": 6}}},
-  "POST /api/articles/:article_id/comments": {"description": "posts a comment to an article", "queries": [], "exampleResponse": {"comment": {"comment_id": 19, "author": "icellusedkars", "article_id": 1, "votes": 0, "created_at": "2017-11-22T12:36:03.389Z", "body": "This article is aaaaamazing!"}}}
+  "POST /api/articles/:article_id/comments": {"description": "posts a comment to an article", "queries": [], "exampleResponse": {"comment": {"comment_id": 19, "author": "icellusedkars", "article_id": 1, "votes": 0, "created_at": "2017-11-22T12:36:03.389Z", "body": "This article is aaaaamazing!"}}},
 
 
   "GET /api/articles/:articleID/comments": {
@@ -76,9 +74,7 @@
     "exampleResponse": {
       "status": 204
     }
-  }
-
-
+  },
 
   "PATCH /api/articles/:article_id": {
     "description": "increments a given article's vote property by the amount specified in the request body",
@@ -96,6 +92,21 @@
       }
 
     }
+  },
+  "GET /api/USERS": {
+    "description": "serves an array of all USERS",
+    "queries": ["username", "avatar_url", "name"],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "tickle122",
+          "avatar_url": "https://www.spiritsurfers.net/monastery/wp-content/uploads/_41500270_mrtickle.jpg",
+          "name": "Tom Tickle"
+          
+        }
+      ]
+    }
   }
+  
 
 }
