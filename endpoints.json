@@ -66,6 +66,16 @@
     }
   },
 
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes a comment by its id",
+    "queries": [],
+    "exampleResponse": {
+      "status": 204
+    }
+  }
+
+
+
   "PATCH /api/articles/:article_id": {
     "description": "increments a given article's vote property by the amount specified in the request body",
     "queries": [{ "article_id": 1, "inc_votes": 1 }],
@@ -80,6 +90,7 @@
         "votes": 100,
         "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
       }
+
     }
   }
 }

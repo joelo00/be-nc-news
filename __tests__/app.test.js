@@ -190,6 +190,25 @@ describe('tests for get /api/articles', () => {
     })
 }) 
 
+
+describe('tests for delete /api/comments/:comment_id', () => {
+    test('returns status 204 and deletes the comment from the database', async () => {
+        const response = await request(app).delete('/api/comments/2').expect(204);
+        const {body} = response
+        expect(body).toEqual({})
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then((result) => {
+            const {comments} = result.body
+            expect(comments.length).toBe(10) //down from 11
+        })
+    })
+    test('given an invalid comment_id, returns status code 400 bad request and responds with error message', () => {
+        return request(app)
+        .delete('/api/comments/invalidCommentID')
+    })
+})
 describe('tests for patch /api/articles/:article_id', () => {
     test('returns status code 200 and responds with updated article object', () => {
         return request(app)
@@ -248,6 +267,15 @@ describe('tests for patch /api/articles/:article_id', () => {
             expect(body.message).toBe('Bad Request')
         })
     })
+    test('when given a comment id that is not in the database, returns status code 204', () => {
+        return request(app)
+        .delete('/api/comments/999')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.message).toBe('Comment id not found')
+        })
+    })
+})
     test('if given article id that is not in the database, returns code 404 not found', () => {
         return request(app)
         .patch('/api/articles/999')
@@ -258,3 +286,4 @@ describe('tests for patch /api/articles/:article_id', () => {
         })
     })
 })
+
