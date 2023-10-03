@@ -25,5 +25,30 @@
         }
       ]
     }
+  },
+  "GET /api/articles/:articleID/comments": {
+    "description" : "serves an array of all comments on a given article",
+    "queries": ["sort_by", "order"],
+    "exampleResponse" : {
+      "comments" : [
+        
+          {
+            "body": "What do you see? I have no idea where this will lead us. This place I speak of, is known as the Black Lodge.",
+            "votes": "16",
+            "author": "icellusedkars",
+            "article_id": "5",
+            "created_at": "1591682400000"
+          },
+          {
+            "body": "I am 100% sure that we're not completely sure.",
+            "votes": "1",
+            "author": "butter_bridge",
+            "article_id": "5",
+            "created_at": "1606176480000"
+          }
+        
+      ]
+    }
   }
+  
 }
