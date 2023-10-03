@@ -98,11 +98,31 @@ describe('tests for get /api/articles', () => {
             articles.forEach((article) => {
                 expect(typeof article.article_id).toBe('number')
                 expect(typeof article.title).toBe('string')
-                expect(typeof article.body).toBe('string')
                 expect(typeof article.votes).toBe('number')
                 expect(typeof article.topic).toBe('string')
                 expect(typeof article.author).toBe('string')
                 expect(typeof article.created_at).toBe('string')
+            })
+        })
+    })
+    test('should be ordered by descending date by default', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then((result) => {
+            const {articles} = result.body
+            expect(articles).toBeSortedBy('created_at', {descending:true})
+        })
+    })
+    test('body should not be included in the response', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then((result) => {
+            const {articles} = result.body
+            expect(articles.length).toBeGreaterThan(0) 
+            articles.forEach((article) => {
+                expect(article.body).toBe(undefined)
             })
         })
     })
