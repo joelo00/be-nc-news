@@ -87,3 +87,45 @@ describe('testing for get /api/articles/:article_id', () => {
     })
 })
 
+describe('tests for GET /api/articles/:article_id/comments.', () => {
+    test('returns status code 200 and responds with an array of comments for the given article_id', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then((result) => {
+            const {comments} = result.body
+            expect(comments.length).toBe(11)
+            comments.forEach((comment) => {
+                expect(typeof comment.comment_id).toBe('number')
+                expect(typeof comment.votes).toBe('number')
+                expect(typeof comment.created_at).toBe('string')
+                expect(typeof comment.author).toBe('string')
+                expect(typeof comment.body).toBe('string')
+            })
+        })
+    })
+    test('given an invalid article_id, returns status code 400 bad request and responds with error message', () => {
+        return request(app)
+        .get('/api/articles/invalidArticleID/comments')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.message).toBe('Bad request')
+        })
+    })
+    test('when given an article id that is not in the database, returns status code 404 not found and responds with error message', () => {
+        return request(app)
+        .get('/api/articles/999/comments')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.message).toBe('Article id not found')
+        })
+    })
+    test('when given a valid article id which has no comments, returns status code 200 and responds with an empty array', () => {
+        return request(app)
+        .get('/api/articles/2/comments')
+        .expect(200)
+        .then(({body}) => {
+            expect(body.comments).toEqual([])
+        })
+    })
+})
