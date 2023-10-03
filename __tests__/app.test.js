@@ -126,7 +126,7 @@ describe('tests for get /api/articles', () => {
             })
         })
     })
-    test.only('article response should include a commentCount property', () => {
+    test('article response should include a commentCount property', () => {
         return request(app)
         .get('/api/articles')
         .expect(200)
