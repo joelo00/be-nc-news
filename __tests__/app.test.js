@@ -126,5 +126,17 @@ describe('tests for get /api/articles', () => {
             })
         })
     })
+    test.only('article response should include a commentCount property', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then((result) => {
+            const {articles} = result.body
+            expect(articles.length).toBeGreaterThan(0) 
+            articles.forEach((article) => {
+                expect(typeof article.comment_count).toBe('number')
+            })
+        })
+    })
 }) 
 
