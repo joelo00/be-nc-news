@@ -2,13 +2,23 @@ const { log } = require("console");
 const db = require("../db/connection.js");
 
 async function fetchArticleById(article_id) {
-    if (!Number(article_id)) return Promise.reject({ status: 400, message: 'Bad request' })
     return db.query(`SELECT * FROM articles WHERE article_id = $1;`, [article_id]).then((article) => {
         if (!article.rows.length) return Promise.reject({ status: 404, message: 'Article id not found' })
         return article.rows[0];
     });
 }
 
+
+async function fetchCommentsOnArticle(article_id){
+    if (!Number(article_id)) return Promise.reject({ status: 400, message: 'Bad Request' })
+    const validArticleIDs = await db.query(`SELECT article_id FROM articles;`).then((articles) => {
+        return articles.rows.map((article) => article.article_id);
+    });
+    if (!validArticleIDs.includes(Number(article_id))) return Promise.reject({ status: 404, message: 'Article id not found' })
+    return db.query(`SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;`, [article_id]).then((comments) => {
+        return comments.rows;
+    });
+}
 async function fetchArticles(sort_by) {
     if (!sort_by) sort_by = 'created_at'
     const validSorts = ['title', 'author', 'article_id', 'topic', 'created_at', 'votes']
@@ -31,7 +41,11 @@ async function fetchArticles(sort_by) {
         return articlesWithCommentCount
         
     })
+
 }
+
+   
+
 
 async function addCommentToArticle(article_id, username, body) {
     article_id = Number(article_id)
@@ -44,4 +58,14 @@ async function addCommentToArticle(article_id, username, body) {
     })
 }
 
-module.exports = { fetchArticleById, fetchArticles, addCommentToArticle };
+async function amendArticleById(article_id, inc_votes = 0) {
+    const currentVotes = await db.query(`SELECT votes FROM articles WHERE article_id = $1;`, [article_id])
+    if (!currentVotes.rows.length) return Promise.reject({ status: 404, message: 'Article id not found' })
+    const updatedVotes = currentVotes.rows[0].votes + inc_votes
+    if (updatedVotes < 0) return Promise.reject({ status: 400, message: 'Bad Request' })
+    return db.query(`UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *;`, [inc_votes, article_id]).then((article) => {
+        return article.rows[0];
+    });
+}
+
+module.exports = { fetchArticleById, fetchArticles, fetchCommentsOnArticle, amendArticleById, addCommentToArticle };
