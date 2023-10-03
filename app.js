@@ -4,7 +4,7 @@ const { handleMispelledPath, handleCustomErrors, handleSQLErrors} = require('./c
 const { getAvailableEndpoints } = require('./controllers/api-controllers.js')
 const { getArticleById, getCommentsOnArticle } = require('./controllers/articles.controllers.js')
 
-app = express()
+const app = express()
 
 app.get('/api/topics', getTopics)
 app.get('/api', getAvailableEndpoints)
