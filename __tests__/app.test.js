@@ -322,7 +322,7 @@ describe('tests for patch /api/articles/:article_id', () => {
             expect(body.message).toBe('Comment id not found')
         })
     })
-})
+
     test('if given article id that is not in the database, returns code 404 not found', () => {
         return request(app)
         .patch('/api/articles/999')

@@ -42,5 +42,5 @@ function patchArticleById (req, res, next) {
     .catch(next)
 }
 
-module.exports = { getArticleById, getArticles, getCommentsOnArticle, patchArticleById, postCommentsOnArticle }
+module.exports = { getArticleById, getArticles, getCommentsOnArticle, patchArticleById, postCommentOnArticle }
 

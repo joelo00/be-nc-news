@@ -4,7 +4,7 @@ const { handleMispelledPath, handleCustomErrors, handleSQLErrors, handle500erros
 const { getAvailableEndpoints } = require('./controllers/api-controllers.js')
 const { deleteCommentById } = require('./controllers/comments.controllers.js')
 
-const { getArticleById, getArticles, getCommentsOnArticle, patchArticleById, postCommentsOnArticle } = require('./controllers/articles.controllers.js')
+const { getArticleById, getArticles, getCommentsOnArticle, patchArticleById, postCommentOnArticle } = require('./controllers/articles.controllers.js')
 
 
 const app = express()
