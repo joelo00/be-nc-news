@@ -190,6 +190,7 @@ describe('tests for get /api/articles', () => {
     })
 }) 
 
+
 describe('tests for delete /api/comments/:comment_id', () => {
     test('returns status 204 and deletes the comment from the database', async () => {
         const response = await request(app).delete('/api/comments/2').expect(204);
@@ -206,6 +207,61 @@ describe('tests for delete /api/comments/:comment_id', () => {
     test('given an invalid comment_id, returns status code 400 bad request and responds with error message', () => {
         return request(app)
         .delete('/api/comments/invalidCommentID')
+    })
+})
+describe('tests for patch /api/articles/:article_id', () => {
+    test('returns status code 200 and responds with updated article object', () => {
+        return request(app)
+        .patch('/api/articles/1')
+        .send({inc_votes: 1})
+        .expect(200)
+        .then((result) => {
+            const {article} = result.body
+            expect(article.votes).toBe(101)
+        })
+    })
+    test('negative votes decrements votes', () => {
+        return request(app)
+        .patch('/api/articles/1')
+        .send({inc_votes: -1})
+        .expect(200)
+        .then((result) => {
+            const {article} = result.body
+            expect(article.votes).toBe(99)
+        })
+    })
+    test('if inc votes is not included in the request body, returns code 200 and responds with unchanged article object', () => {
+        return request(app)
+        .patch('/api/articles/1')
+        .send({})
+        .expect(200)
+        .then((result) => {
+            const {article} = result.body
+            expect(article.votes).toBe(100)
+        })
+    })
+    test('if inc votes is a negative number greater than the current votes, returns code 400 bad request', () => {
+        return request(app)
+        .patch('/api/articles/1')
+        .send({inc_votes: -101})
+        .expect(400)
+        .then(({body}) => {
+            expect(body.message).toBe('Bad Request')
+        })
+    })
+    test('if inc votes is not a number, returns code 400 bad request', () => {
+        return request(app)
+        .patch('/api/articles/1')
+        .send({inc_votes: 'not a number'})
+        .expect(400)
+        .then(({body}) => {
+            expect(body.message).toBe('Bad Request')
+        })
+    })
+    test('if given invalid article id, returns code 400 bad request', () => {
+        return request(app)
+        .patch('/api/articles/invalidArticleID')
+        .send({inc_votes: 1})
         .expect(400)
         .then(({body}) => {
             expect(body.message).toBe('Bad Request')
@@ -220,3 +276,14 @@ describe('tests for delete /api/comments/:comment_id', () => {
         })
     })
 })
+    test('if given article id that is not in the database, returns code 404 not found', () => {
+        return request(app)
+        .patch('/api/articles/999')
+        .send({inc_votes: 1})
+        .expect(404)
+        .then(({body}) => {
+            expect(body.message).toBe('Article id not found')
+        })
+    })
+})
+
