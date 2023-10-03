@@ -333,7 +333,22 @@ describe('tests for patch /api/articles/:article_id', () => {
         })
     })
 
-}) 
+})
+
+describe('tests for get /api/users', () => {
+    test('returns status code 200 and responds with an array of users', () => {
+        return request(app)
+        .get('/api/users')
+        .expect(200)
+        .then((result) => {
+            const {users} = result.body
+            expect(users.length).toBe(4)
+            users.forEach((user) => {
+                expect(user).toMatchObject({username: expect.any(String), avatar_url: expect.any(String), name: expect.any(String)})
+            })
+        })
+    })
+})
 
 
 

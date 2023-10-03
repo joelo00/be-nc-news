@@ -3,6 +3,7 @@ const {getTopics} = require('./controllers/topics-controllers.js')
 const { handleMispelledPath, handleCustomErrors, handleSQLErrors, handle500erros} = require('./controllers/errors-controllers.js')
 const { getAvailableEndpoints } = require('./controllers/api-controllers.js')
 const { deleteCommentById } = require('./controllers/comments.controllers.js')
+const { getUsers } = require('./controllers/users.controllers.js')
 
 const { getArticleById, getArticles, getCommentsOnArticle, patchArticleById, postCommentOnArticle } = require('./controllers/articles.controllers.js')
 
@@ -15,7 +16,7 @@ app.get('/api', getAvailableEndpoints)
 app.get('/api/articles', getArticles)
 app.get('/api/articles/:article_id', getArticleById)
 app.get('/api/articles/:article_id/comments', getCommentsOnArticle)
-
+app.get('/api/users', getUsers)
 
 app.delete('/api/comments/:comment_id', deleteCommentById)
 

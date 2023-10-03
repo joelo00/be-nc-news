@@ -75,9 +75,6 @@
       "status": 204
     }
   },
-
-
-
   "PATCH /api/articles/:article_id": {
     "description": "increments a given article's vote property by the amount specified in the request body",
     "queries": [{ "article_id": 1, "inc_votes": 1 }],
@@ -94,6 +91,21 @@
       }
 
     }
+  },
+  "GET /api/USERS": {
+    "description": "serves an array of all USERS",
+    "queries": ["username", "avatar_url", "name"],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "tickle122",
+          "avatar_url": "https://www.spiritsurfers.net/monastery/wp-content/uploads/_41500270_mrtickle.jpg",
+          "name": "Tom Tickle"
+          
+        }
+      ]
+    }
   }
+  
 
 }
