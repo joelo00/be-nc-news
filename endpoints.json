@@ -75,7 +75,6 @@
       "status": 204
     }
   },
-
   "PATCH /api/articles/:article_id": {
     "description": "increments a given article's vote property by the amount specified in the request body",
     "queries": [{ "article_id": 1, "inc_votes": 1 }],
