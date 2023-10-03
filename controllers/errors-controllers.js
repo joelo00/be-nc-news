@@ -21,3 +21,8 @@ exports.handleSQLErrors = (err,req,res,next)=>{
 exports.handleMispelledPath = (req,res,next)=>{
     res.status(404).send({message:'Path not found'})
 }
+
+exports.handle500erros = (err,req,res,next)=>{
+    console.log(err)
+    res.status(500).send({message:'Internal Server Error'})
+}
