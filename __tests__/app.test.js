@@ -104,6 +104,15 @@ describe('tests for GET /api/articles/:article_id/comments.', () => {
             })
         })
     })
+    test('should return comments sorted by created_at in descending order by default', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then((result) => {
+            const {comments} = result.body
+            expect(comments).toBeSortedBy('created_at', {descending: true})
+        })
+    })
     test('given an invalid article_id, returns status code 400 bad request and responds with error message', () => {
         return request(app)
         .get('/api/articles/invalidArticleID/comments')

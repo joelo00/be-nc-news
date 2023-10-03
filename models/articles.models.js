@@ -14,7 +14,7 @@ async function fetchCommentsOnArticle(article_id){
         return articles.rows.map((article) => article.article_id);
     });
     if (!validArticleIDs.includes(Number(article_id))) return Promise.reject({ status: 404, message: 'Article id not found' })
-    return db.query(`SELECT * FROM comments WHERE article_id = $1;`, [article_id]).then((comments) => {
+    return db.query(`SELECT * FROM comments WHERE article_id = ${article_id} ORDER BY created_at DESC;`).then((comments) => {
         return comments.rows;
     });
 }
