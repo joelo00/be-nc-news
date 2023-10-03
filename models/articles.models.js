@@ -45,7 +45,7 @@ async function fetchArticles(sort_by) {
 
 }
 
-async function amendArticleById(article_id, inc_votes) {
+async function amendArticleById(article_id, inc_votes = 0) {
     const currentVotes = await db.query(`SELECT votes FROM articles WHERE article_id = $1;`, [article_id])
     if (!currentVotes.rows.length) return Promise.reject({ status: 404, message: 'Article id not found' })
     const updatedVotes = currentVotes.rows[0].votes + inc_votes

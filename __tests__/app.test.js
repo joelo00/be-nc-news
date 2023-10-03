@@ -211,6 +211,16 @@ describe('tests for patch /api/articles/:article_id', () => {
             expect(article.votes).toBe(99)
         })
     })
+    test('if inc votes is not included in the request body, returns code 200 and responds with unchanged article object', () => {
+        return request(app)
+        .patch('/api/articles/1')
+        .send({})
+        .expect(200)
+        .then((result) => {
+            const {article} = result.body
+            expect(article.votes).toBe(100)
+        })
+    })
     test('if inc votes is a negative number greater than the current votes, returns code 400 bad request', () => {
         return request(app)
         .patch('/api/articles/1')
