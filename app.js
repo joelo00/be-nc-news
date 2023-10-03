@@ -12,6 +12,8 @@ app.get('/api', getAvailableEndpoints)
 app.get('/api/articles', getArticles)
 app.get('/api/articles/:article_id', getArticleById)
 
+app.post('/api/articles/:article_id/comments', postCommentOnArticle)
+
 app.get('/*', handleMispelledPath)
 
 app.use(handleCustomErrors)

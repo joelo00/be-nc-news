@@ -140,3 +140,15 @@ describe('tests for get /api/articles', () => {
     })
 }) 
 
+describe('POST /api/articles/:article_id/comments', () => {
+    test('returns status code 201 and responds with the posted comment', () => {
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send({username: 'test_username', body: 'test comment'})
+        .expect(201)
+        .then((result) => {
+            const {comment} = result.body
+            expect(comment).toEqual({"author": "test_username", "body": "test comment", "comment_id": 19, "created_at": expect.any(String), "votes": 0})
+        })
+    })
+})
