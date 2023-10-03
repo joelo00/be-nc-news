@@ -2,6 +2,7 @@ const express = require('express')
 const {getTopics} = require('./controllers/topics-controllers.js')
 const { handleMispelledPath, handleCustomErrors, handleSQLErrors} = require('./controllers/errors-controllers.js')
 const { getAvailableEndpoints } = require('./controllers/api-controllers.js')
+
 const { getArticleById, getArticles } = require('./controllers/articles.controllers.js')
 
 app = express()
