@@ -4,8 +4,7 @@ const { handleMispelledPath, handleCustomErrors, handleSQLErrors, handle500erros
 const { getAvailableEndpoints } = require('./controllers/api-controllers.js')
 const { deleteCommentById } = require('./controllers/comments.controllers.js')
 
-
-const { getArticleById, getArticles, getCommentsOnArticle, patchArticleById } = require('./controllers/articles.controllers.js')
+const { getArticleById, getArticles, getCommentsOnArticle, patchArticleById, postCommentsOnArticle } = require('./controllers/articles.controllers.js')
 
 
 const app = express()
@@ -23,7 +22,12 @@ app.delete('/api/comments/:comment_id', deleteCommentById)
 app.patch('/api/articles/:article_id', patchArticleById)
 
 
+app.post('/api/articles/:article_id/comments', postCommentOnArticle)
+
+app.get('/*', handleMispelledPath)
+
 app.all('/*', handleMispelledPath)
+
 
 app.use(handleCustomErrors)
 app.use(handleSQLErrors)

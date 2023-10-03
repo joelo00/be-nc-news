@@ -1,7 +1,4 @@
-
-const {fetchArticleById, fetchArticles, fetchCommentsOnArticle, amendArticleById} = require('../models/articles.models.js')
-
-
+const {fetchArticleById, fetchArticles, fetchCommentsOnArticle, amendArticleById, addCommentToArticle} = require('../models/articles.models.js')
 
 function getArticleById(req, res, next) {
    const { article_id } = req.params
@@ -27,6 +24,15 @@ function getArticles (req, res, next) {
     .catch(next)
 }
 
+function postCommentOnArticle(req, res, next) {
+    const {article_id} = req.params
+    const {username, body} = req.body
+    addCommentToArticle(article_id, username, body).then((comment) => {
+        res.status(201).send({comment})
+    })
+    .catch(next)
+}
+
 function patchArticleById (req, res, next) {
     const { article_id } = req.params
     const { inc_votes } = req.body
@@ -36,5 +42,5 @@ function patchArticleById (req, res, next) {
     .catch(next)
 }
 
-module.exports = { getArticleById, getArticles, getCommentsOnArticle, patchArticleById }
+module.exports = { getArticleById, getArticles, getCommentsOnArticle, patchArticleById, postCommentsOnArticle }
 
