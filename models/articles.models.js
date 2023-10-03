@@ -45,5 +45,15 @@ async function fetchArticles(sort_by) {
 
 }
 
-module.exports = { fetchArticleById, fetchArticles, fetchCommentsOnArticle };
+async function amendArticleById(article_id, inc_votes) {
+    const currentVotes = await db.query(`SELECT votes FROM articles WHERE article_id = $1;`, [article_id])
+    if (!currentVotes.rows.length) return Promise.reject({ status: 404, message: 'Article id not found' })
+    const updatedVotes = currentVotes.rows[0].votes + inc_votes
+    if (updatedVotes < 0) return Promise.reject({ status: 400, message: 'Bad Request' })
+    return db.query(`UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *;`, [inc_votes, article_id]).then((article) => {
+        return article.rows[0];
+    });
+}
+
+module.exports = { fetchArticleById, fetchArticles, fetchCommentsOnArticle, amendArticleById };
 

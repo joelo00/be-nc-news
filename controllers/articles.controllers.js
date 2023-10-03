@@ -1,5 +1,5 @@
 
-const {fetchArticleById, fetchArticles, fetchCommentsOnArticle} = require('../models/articles.models.js')
+const {fetchArticleById, fetchArticles, fetchCommentsOnArticle, amendArticleById} = require('../models/articles.models.js')
 
 
 
@@ -27,5 +27,14 @@ function getArticles (req, res, next) {
     .catch(next)
 }
 
-module.exports = { getArticleById, getArticles, getCommentsOnArticle }
+function patchArticleById (req, res, next) {
+    const { article_id } = req.params
+    const { inc_votes } = req.body
+    amendArticleById(article_id, inc_votes).then((article) => {
+        res.status(200).send({ article })
+    })
+    .catch(next)
+}
+
+module.exports = { getArticleById, getArticles, getCommentsOnArticle, patchArticleById }
 
