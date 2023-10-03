@@ -7,6 +7,7 @@ exports.handleCustomErrors = (err,req,res,next)=>{
 
 exports.handleSQLErrors = (err,req,res,next)=>{
     if (err.code){
+        console.log(err)
 
         const errCodes = {
             '22P02': {status:400, msg:'Bad Request'},

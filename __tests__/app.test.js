@@ -140,15 +140,51 @@ describe('tests for get /api/articles', () => {
     })
 }) 
 
-/*describe('POST /api/articles/:article_id/comments', () => {
+describe('POST /api/articles/:article_id/comments', () => {
     test('returns status code 201 and responds with the posted comment', () => {
         return request(app)
         .post('/api/articles/1/comments')
-        .send({username: 'test_username', body: 'test comment'})
+        .send({username: 'butter_bridge', body: 'test comment'})
         .expect(201)
         .then((result) => {
             const {comment} = result.body
-            expect(comment).toEqual({"author": "test_username", "body": "test comment", "comment_id": 19, "created_at": expect.any(String), "votes": 0})
+            expect(comment).toEqual({"article_id": 1,"author": "butter_bridge", "body": "test comment", "comment_id": 19, "created_at": expect.any(String), "votes": 0})
         })
     })
-}) */
+    test('if username is not in the database, returns status code 404 not found and responds with error message', () => {
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send({username: 'invalidUsername', body: 'test comment'})
+        .expect(404)
+        .then(({body}) => {
+            expect(body.message).toBe('Not Found')
+        })
+    })
+    test("if user posts a comment with a missing body, returns status code 400 bad request and responds with error message", () => {
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send({username: 'butter_bridge'})
+        .expect(400)
+        .then(({body}) => {
+            expect(body.message).toBe('Bad request')
+        })
+    })
+    test('if user tries to post to an invalid article_id, returns status code 400 bad request and responds with error message', () => {
+        return request(app)
+        .post('/api/articles/invalidArticleID/comments')
+        .send({username: 'butter_bridge', body: 'test comment'})
+        .expect(400)
+        .then(({body}) => {
+            expect(body.message).toBe('Bad request')
+        })
+    })
+    test('if user tries to post to an article_id that is not in the database, returns status code 404 not found and responds with error message', () => {
+        return request(app)
+        .post('/api/articles/999/comments')
+        .send({username: 'butter_bridge', body: 'test comment'})
+        .expect(404)
+        .then(({body}) => {
+            expect(body.message).toBe('Article id not found')
+        })
+    })
+}) 

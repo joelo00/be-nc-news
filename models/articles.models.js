@@ -31,13 +31,17 @@ async function fetchArticles(sort_by) {
         return articlesWithCommentCount
         
     })
-   
-   
-   
-    /* return db.query(`SELECT title, author, article_id, topic, created_at, votes FROM articles ORDER BY ${sort_by} DESC;`).then((articles) => {
-        return articles.rows;
-    })*/
-
 }
 
-module.exports = { fetchArticleById, fetchArticles };
+async function addCommentToArticle(article_id, username, body) {
+    article_id = Number(article_id)
+    if (!article_id || !username || !body) return Promise.reject({ status: 400, message: 'Bad request' })
+    return db.query(`SELECT * FROM articles WHERE article_id = $1;`, [article_id]).then((article) => {
+        if (!article.rows.length) return Promise.reject({ status: 404, message: 'Article id not found' })
+        return db.query(`INSERT INTO comments (author, article_id, body) VALUES ($1, $2, $3) RETURNING *;`, [username, article_id, body]).then((comment) => {
+            return comment.rows[0]
+        })
+    })
+}
+
+module.exports = { fetchArticleById, fetchArticles, addCommentToArticle };
