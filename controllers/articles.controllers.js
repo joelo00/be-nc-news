@@ -27,5 +27,5 @@ function getArticles (req, res, next) {
     .catch(next)
 }
 
-module.exports = { getArticleById, getArticles, getCommentsOnArticles }
+module.exports = { getArticleById, getArticles, getCommentsOnArticle }
 
