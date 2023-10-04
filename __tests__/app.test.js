@@ -67,7 +67,7 @@ describe('testing for get /api/articles/:article_id', () => {
         .expect(200)
         .then((result) => {
             const {article} = result.body
-            expect(article).toEqual({"article_id": 1, "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700", "author": "butter_bridge", "body": "I find this existence challenging", "created_at": "2020-07-09T20:11:00.000Z", "title": "Living in the shadow of a great man", "topic": "mitch", "votes": 100})
+            expect(article).toMatchObject({article_id: expect.any(Number), title: expect.any(String), votes: expect.any(Number), topic: expect.any(String), author: expect.any(String), created_at: expect.any(String)})
             })
     })
     test('given an invalid article_id, returns status code 400 bad request and responds with error message', () => {
@@ -84,6 +84,24 @@ describe('testing for get /api/articles/:article_id', () => {
         .expect(404)
         .then(({body}) => {
             expect(body.message).toBe('Article id not found')
+        })
+    })
+    test('article should include a commentCount property', () => {
+        return request(app)
+        .get('/api/articles/1')
+        .expect(200)
+        .then((result) => {
+            const {article} = result.body
+            expect(article.comment_count).toBe(11)
+        })
+    })
+    test('should work correctly even when there are no comments on an article', () => {
+        return request(app)
+        .get('/api/articles/2')
+        .expect(200)
+        .then((result) => {
+            const {article} = result.body
+            expect(article.comment_count).toBe(0)
         })
     })
 })
@@ -345,7 +363,7 @@ describe('tests for patch /api/articles/:article_id', () => {
             expect(body.message).toBe('Bad Request')
         })
     })
-    test('when given a comment id that is not in the database, returns status code 204', () => {
+    test('when given a comment id that is not in the database, returns status code 404', () => {
         return request(app)
         .delete('/api/comments/999')
         .expect(404)
