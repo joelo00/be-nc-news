@@ -332,7 +332,7 @@ describe('tests for patch /api/articles/:article_id', () => {
             expect(body.message).toBe('Bad Request')
         })
     })
-    test('when given a comment id that is not in the database, returns status code 204', () => {
+    test('when given a comment id that is not in the database, returns status code 404', () => {
         return request(app)
         .delete('/api/comments/999')
         .expect(404)
