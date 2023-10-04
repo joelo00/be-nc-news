@@ -219,17 +219,45 @@ describe('tests for get /api/articles', () => {
                     })
                 })
             })
-            test('should return 400 bad request if topic does not exist', () => {
+            test('should return 404 if topic does not exist', () => {
                 return request(app)
                 .get('/api/articles?topic=invalidTopic')
-                .expect(400)
+                .expect(404)
                 .then(({body}) => {
-                    expect(body.message).toBe('Bad Request')
+                    expect(body.message).toBe('Topic not found')
                 })
             })
             test('protects against sql injection', () => {
                 return request(app)
                 .get('/api/articles?topic=mitch%DROP%DATABASE%')
+                .expect(404)
+                .then(({body}) => {
+                    expect(body.message).toBe('Topic not found')
+                })
+            })
+        })
+        describe('tests for sort_by and order query', () => {
+            test('should return an array of articles sorted by the given column and in the given order', () => {
+                return request(app)
+                .get('/api/articles?sort_by=author&order=asc')
+                .expect(200)
+                .then((result) => {
+                    const {articles} = result.body
+                    expect(articles.length).toBeGreaterThan(0)
+                    expect(articles).toBeSortedBy('author', {descending: false})
+                })
+            })
+            test('should return 400 bad request if given an invalid sort_by column', () => {
+                return request(app)
+                .get('/api/articles?sort_by=invalidColumn')
+                .expect(400)
+                .then(({body}) => {
+                    expect(body.message).toBe('Bad Request')
+                })
+            })
+            test('should return 400 bad request if given an invalid order', () => {
+                return request(app)
+                .get('/api/articles?order=invalidOrder')
                 .expect(400)
                 .then(({body}) => {
                     expect(body.message).toBe('Bad Request')
