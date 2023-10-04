@@ -1,34 +1,24 @@
 const express = require('express')
-const {getTopics} = require('./controllers/topics-controllers.js')
 const { handleMispelledPath, handleCustomErrors, handleSQLErrors, handle500erros} = require('./controllers/errors-controllers.js')
-const { getAvailableEndpoints } = require('./controllers/api-controllers.js')
-const { deleteCommentById } = require('./controllers/comments.controllers.js')
-const { getUsers } = require('./controllers/users.controllers.js')
-
-const { getArticleById, getArticles, getCommentsOnArticle, patchArticleById, postCommentOnArticle } = require('./controllers/articles.controllers.js')
-
-
+const apiRouter = require('./routes/api-router.js')
+const articlesRouter = require('./routes/articles-router.js')
+const usersRouter = require('./routes/users-router.js')
+const topicsRouter = require('./routes/topics-router.js')
+const commentsRouter = require('./routes/comments-router.js')
 const app = express()
 app.use(express.json())
 
-app.get('/api/topics', getTopics)
-app.get('/api', getAvailableEndpoints)
-app.get('/api/articles', getArticles)
-app.get('/api/articles/:article_id', getArticleById)
-app.get('/api/articles/:article_id/comments', getCommentsOnArticle)
-app.get('/api/users', getUsers)
+app.use('/api', apiRouter);
 
-app.delete('/api/comments/:comment_id', deleteCommentById)
+app.use('/api/articles', articlesRouter)
 
-app.patch('/api/articles/:article_id', patchArticleById)
+app.use('/api/users', usersRouter)
 
+app.use('/api/topics', topicsRouter)
 
-app.post('/api/articles/:article_id/comments', postCommentOnArticle)
-
-app.get('/*', handleMispelledPath)
+app.use('/api/comments', commentsRouter)
 
 app.all('/*', handleMispelledPath)
-
 
 app.use(handleCustomErrors)
 app.use(handleSQLErrors)
