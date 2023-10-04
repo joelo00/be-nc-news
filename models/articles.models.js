@@ -2,10 +2,14 @@ const { log } = require("console");
 const db = require("../db/connection.js");
 
 async function fetchArticleById(article_id) {
-    return db.query(`SELECT * FROM articles WHERE article_id = $1;`, [article_id]).then((article) => {
-        if (!article.rows.length) return Promise.reject({ status: 404, message: 'Article id not found' })
-        return article.rows[0];
-    });
+    const articlePromise = db.query(`SELECT * FROM articles WHERE article_id = $1;`, [article_id])
+    const commentCountPromise = db.query(`SELECT COUNT(comment_id) FROM comments WHERE article_id = $1 GROUP BY article_id;`, [article_id])
+    return Promise.all([articlePromise, commentCountPromise]).then(([article, commentCount]) => {
+        article = article.rows[0]
+        if (!article) return Promise.reject({ status: 404, message: 'Article id not found' })
+        article.comment_count = commentCount.rows.length ? Number(commentCount.rows[0].count) : 0
+        return article
+    })
 }
 
 
