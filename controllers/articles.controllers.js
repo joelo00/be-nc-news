@@ -1,3 +1,4 @@
+const { log } = require('console')
 const {fetchArticleById, fetchArticles, fetchCommentsOnArticle, amendArticleById, addCommentToArticle} = require('../models/articles.models.js')
 
 function getArticleById(req, res, next) {
@@ -18,7 +19,8 @@ function getCommentsOnArticle(req, res, next) {
 }
 function getArticles (req, res, next) {
     const {sort_by} = req.query
-    fetchArticles(sort_by).then((articles) => {
+    const { topic } = req.query
+    fetchArticles(sort_by, topic).then((articles) => {
         res.status(200).send({ articles })
     })
     .catch(next)
@@ -36,7 +38,7 @@ function postCommentOnArticle(req, res, next) {
 function patchArticleById (req, res, next) {
     const { article_id } = req.params
     const { inc_votes } = req.body
-    amendArticleById(article_id, inc_votes).then((article) => {
+       amendArticleById(article_id, inc_votes).then((article) => {
         res.status(200).send({ article })
     })
     .catch(next)

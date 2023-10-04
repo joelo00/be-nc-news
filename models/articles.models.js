@@ -19,12 +19,17 @@ async function fetchCommentsOnArticle(article_id){
         return comments.rows;
     });
 }
-async function fetchArticles(sort_by) {
-    if (!sort_by) sort_by = 'created_at'
-    const validSorts = ['title', 'author', 'article_id', 'topic', 'created_at', 'votes']
-    if (!validSorts.includes(sort_by)) return Promise.reject({ status: 400, message: 'Bad request' })
+async function fetchArticles(sort_by = 'created_at', topic) {
+    const validSorts = ['title', 'author', 'article_id', 'topic', 'created_at', 'votes'] //didnt make this dynamic because it is unlikely to change
+    let validTopics = await db.query(`SELECT DISTINCT topic FROM articles;`) //made this dynamic because topic list could change as new articles are added
+    validTopics = validTopics.rows.map((topic) => topic.topic)
+    if (!validSorts.includes(sort_by) || !validTopics.includes(topic) && topic) return Promise.reject({ status: 400, message: 'Bad Request' })
     const commentsCountPromise = db.query(`SELECT article_id, COUNT(comment_id) FROM comments GROUP BY article_id;`)
-    const articlesPromise = db.query(`SELECT * FROM articles ORDER BY ${sort_by} DESC;`)
+
+    let articleQueryString =`SELECT * FROM articles`
+    if (topic) articleQueryString += ` WHERE topic = '${topic}'`
+    articleQueryString += ` ORDER BY ${sort_by} DESC;`
+    const articlesPromise = db.query(articleQueryString)
     return Promise.all([commentsCountPromise, articlesPromise]).then(([comments, articles]) => {
         commentsCount = comments.rows
         articles = articles.rows
@@ -32,16 +37,12 @@ async function fetchArticles(sort_by) {
             const commentCount = commentsCount.find((comment) => {
                 return comment.article_id === article.article_id
             })
-            
             article.comment_count =  commentCount ? Number(commentCount.count) : 0
             delete article.body
-            
             return article
         })
         return articlesWithCommentCount
-        
-    })
-
+     })
 }
 
    

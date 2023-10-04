@@ -4,8 +4,8 @@ const { app } = require("../app.js")
 const seed = require("../db/seeds/seed.js");
 const data = require("../db/data/test-data");
  const {readFile} = require('fs/promises');
-const { log } = require("console");
-const { expect } = require("@jest/globals");
+
+
 
 beforeEach(() => {
   return seed(data);
@@ -188,6 +188,37 @@ describe('tests for get /api/articles', () => {
             })
         })
     })
+        describe('tests for topic query', () => {
+            test('should return an array of articles filtered by topic', () => {
+                return request(app)
+                .get('/api/articles?topic=mitch')
+                .expect(200)
+                .then((result) => {
+                    const {articles} = result.body
+                    expect(articles.length).toBe(12)
+                    articles.forEach((article) => {
+                        expect(article).toMatchObject({topic: 'mitch'})
+                    })
+                })
+            })
+            test('should return 400 bad request if topic does not exist', () => {
+                return request(app)
+                .get('/api/articles?topic=invalidTopic')
+                .expect(400)
+                .then(({body}) => {
+                    expect(body.message).toBe('Bad Request')
+                })
+            })
+            test('protects against sql injection', () => {
+                return request(app)
+                .get('/api/articles?topic=mitch%DROP%DATABASE%')
+                .expect(400)
+                .then(({body}) => {
+                    expect(body.message).toBe('Bad Request')
+                })
+            })
+        })
+    
 }) 
 
 describe('POST /api/articles/:article_id/comments', () => {
