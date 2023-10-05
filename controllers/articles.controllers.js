@@ -18,9 +18,9 @@ function getCommentsOnArticle(req, res, next) {
     .catch(next)
 }
 function getArticles (req, res, next) {
-    const {sort_by} = req.query
-    const { topic } = req.query
-    fetchArticles(sort_by, topic).then((articles) => {
+    const {sort_by, topic, order, limit, p} = req.query
+
+    fetchArticles(sort_by, topic, order, limit, p).then((articles) => {
         res.status(200).send({ articles })
     })
     .catch(next)

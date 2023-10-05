@@ -24,16 +24,17 @@ async function fetchCommentsOnArticle(article_id){
         return comments.rows;
     });
 }
-async function fetchArticles(sort_by = 'created_at', topic) {
+async function fetchArticles(sort_by = 'created_at',  topic, order = 'DESC', limit = 10, p = 1) {
+    const validOrders = ['ASC', 'DESC', 'asc', 'desc']
     const validSorts = ['title', 'author', 'article_id', 'topic', 'created_at', 'votes'] //didnt make this dynamic because it is unlikely to change
     let validTopics = await db.query(`SELECT DISTINCT topic FROM articles;`) //made this dynamic because topic list could change as new articles are added
     validTopics = validTopics.rows.map((topic) => topic.topic)
-    if (!validSorts.includes(sort_by) || !validTopics.includes(topic) && topic) return Promise.reject({ status: 400, message: 'Bad Request' })
+    if (!validSorts.includes(sort_by) || !validTopics.includes(topic) && topic || !validOrders.includes(order)) return Promise.reject({ status: 400, message: 'Bad Request' })
     const commentsCountPromise = db.query(`SELECT article_id, COUNT(comment_id) FROM comments GROUP BY article_id;`)
 
     let articleQueryString =`SELECT * FROM articles`
     if (topic) articleQueryString += ` WHERE topic = '${topic}'`
-    articleQueryString += ` ORDER BY ${sort_by} DESC;`
+    articleQueryString += ` ORDER BY ${sort_by} ${order.toUpperCase()} LIMIT ${limit} OFFSET ${(p - 1) * limit};`
     const articlesPromise = db.query(articleQueryString)
     return Promise.all([commentsCountPromise, articlesPromise]).then(([comments, articles]) => {
         commentsCount = comments.rows

@@ -156,14 +156,14 @@ describe('tests for GET /api/articles/:article_id/comments.', () => {
     })
 })
 
-describe('tests for get /api/articles', () => {
+describe.only('tests for get /api/articles', () => {
     test('returns status code 200 and an array of articles with correct properties', () => {
         return request(app)
         .get('/api/articles')
         .expect(200)
         .then((result) => {
             const {articles} = result.body
-            expect(articles.length).toBe(13)
+            expect(articles.length).toBe(10)
             articles.forEach((article) => {
                 expect(typeof article.article_id).toBe('number')
                 expect(typeof article.title).toBe('string')
@@ -210,7 +210,7 @@ describe('tests for get /api/articles', () => {
         describe('tests for topic query', () => {
             test('should return an array of articles filtered by topic', () => {
                 return request(app)
-                .get('/api/articles?topic=mitch')
+                .get('/api/articles?topic=mitch&limit=100')
                 .expect(200)
                 .then((result) => {
                     const {articles} = result.body
@@ -235,6 +235,39 @@ describe('tests for get /api/articles', () => {
                 .then(({body}) => {
                     expect(body.message).toBe('Bad Request')
                 })
+            })
+        })
+        describe('tests for author pagination, accepts limit and p query and retirns given number of articles starting at given page', () => {
+            test('if neither p nor limit are specified, returns first 10 articles', () => {
+                return request(app)
+                .get('/api/articles?sort_by=article_id&order=asc')
+                .expect(200)
+                .then((result) => {
+                    const {articles} = result.body
+                    expect(articles.length).toBe(10)
+                    expect(articles[0].article_id).toBe(1)
+                    expect(articles[9].article_id).toBe(10)
+                })
+            })
+        })
+        test('if p is specified and limit is given, returns correct amount of articles starting at given page', () => {
+            return request(app)
+            .get('/api/articles?sort_by=article_id&order=asc&p=2&limit=3')
+            .expect(200)
+            .then((result) => {
+                const {articles} = result.body
+                expect(articles.length).toBe(3) //because only 3 in databse
+                expect(articles[0].article_id).toBe(4)
+                expect(articles[2].article_id).toBe(6)
+                
+            })
+        })
+        test('if p or limmit are not valid numbers, returns status code 400 bad request', () => {
+            return request(app)
+            .get('/api/articles?sort_by=article_id&order=asc&p=invalidPage&limit=3')
+            .expect(400)
+            .then(({body}) => {
+                expect(body.message).toBe('Bad Request')
             })
         })
     
@@ -489,7 +522,7 @@ describe('tests for patch /api/comments/:comment_id', () => {
     })
 })
 
-describe.only('tests for post /api/articles', () => {
+describe('tests for post /api/articles', () => {
     test('returns status code 201 and responds with the posted article', () => {
         return request(app)
         .post('/api/articles')
@@ -539,3 +572,4 @@ describe.only('tests for post /api/articles', () => {
     })
 
 })
+
