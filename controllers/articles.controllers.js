@@ -12,7 +12,8 @@ function getArticleById(req, res, next) {
 
 function getCommentsOnArticle(req, res, next) {
     const { article_id } = req.params
-    fetchCommentsOnArticle(article_id).then((comments) => {
+    const {sort_by, order, limit, p} = req.query
+    fetchCommentsOnArticle(article_id, sort_by, order, limit, p).then((comments) => {
         res.status(200).send({ comments })
     })
     .catch(next)

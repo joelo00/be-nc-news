@@ -14,13 +14,15 @@ async function fetchArticleById(article_id) {
 }
 
 
-async function fetchCommentsOnArticle(article_id){
-    if (!Number(article_id)) return Promise.reject({ status: 400, message: 'Bad Request' })
+async function fetchCommentsOnArticle(article_id, sort_by = 'created_at', order = 'DESC', limit = 10, p = 1) {
+    const validOrders = ['ASC', 'DESC', 'asc', 'desc']
+    const validSorts = ['comment_id', 'votes', 'created_at', 'author', 'body']
+    if (!validSorts.includes(sort_by) || !validOrders.includes(order) || !Number(article_id) || isNaN(+limit) || isNaN(+p)) return Promise.reject({ status: 400, message: 'Bad Request' })
     const validArticleIDs = await db.query(`SELECT article_id FROM articles;`).then((articles) => {
         return articles.rows.map((article) => article.article_id);
     });
     if (!validArticleIDs.includes(Number(article_id))) return Promise.reject({ status: 404, message: 'Article id not found' })
-    return db.query(`SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;`, [article_id]).then((comments) => {
+    return db.query(`SELECT * FROM comments WHERE article_id = $1 ORDER BY ${sort_by} ${order} LIMIT ${limit} OFFSET ${(p - 1) * limit} `, [article_id]).then((comments) => {
         return comments.rows;
     });
 }
