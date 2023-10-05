@@ -400,7 +400,25 @@ describe('tests for get /api/users', () => {
     })
 })
 
-
+describe('tests for get /api/users/:username', () => {
+    test('returns status code 200 and responds with the user object', () => {
+        return request(app)
+        .get('/api/users/butter_bridge')
+        .expect(200)
+        .then((result) => {
+            const {user} = result.body
+            expect(user).toMatchObject({username: expect.any(String), avatar_url: expect.any(String), name: expect.any(String)})
+        })
+    })
+    test('if given a username that is not in the database, returns status code 404 not found and responds with error message', () => {
+        return request(app)
+        .get('/api/users/invalidUsername')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.message).toBe('User not found')
+        })
+    })
+})
 
 
 
