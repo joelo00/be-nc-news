@@ -131,6 +131,21 @@
         "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"
       }
     }
+  },
+  "POST /api/articles": {
+    "description": "posts a new article to article database",
+    "queries": [{"title": "test title", "body": "test body", "topic": "mitch", "username": "butter_bridge"}],
+    "exampleResponse": {
+      "article": {
+        "article_id": 14,
+        "author": "butter_bridge",
+        "topic": "mitch",
+        "body": "test body",
+        "title": "test title",
+        "created_at": 1594329060000,
+        "votes": 0
+      }
+    }
   }
   
 

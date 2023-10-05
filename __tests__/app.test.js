@@ -421,7 +421,7 @@ describe('tests for get /api/users/:username', () => {
 })
 
 
-describe.only('tests for patch /api/comments/:comment_id', () => {
+describe('tests for patch /api/comments/:comment_id', () => {
     test('if inc votes is not included in the request body, returns code 200 and responds with unchanged comment object', () => {
         return request(app)
         .patch('/api/comments/1')
@@ -487,4 +487,55 @@ describe.only('tests for patch /api/comments/:comment_id', () => {
             expect(body.message).toBe('Comment id not found')
         })
     })
+})
+
+describe.only('tests for post /api/articles', () => {
+    test('returns status code 201 and responds with the posted article', () => {
+        return request(app)
+        .post('/api/articles')
+        .send({title: 'test title', body: 'test body', topic: 'mitch', username: 'butter_bridge'})
+        .expect(201)
+        .then((result) => {
+            const {article} = result.body
+            expect(article).toMatchObject({article_id: 14, title: 'test title', body: 'test body', topic: 'mitch', author: 'butter_bridge', created_at: expect.any(String)})
+        })
+    })
+    test('votes should be initialised to 0', () => {
+        return request(app)
+        .post('/api/articles')
+        .send({title: 'test title', body: 'test body', topic: 'mitch', username: 'butter_bridge'})
+        .expect(201)
+        .then((result) => {
+            const {article} = result.body
+            expect(article.votes).toBe(0)
+        })
+    })
+    test('if username is not in databse, returns 404 user not found', () => {
+        return request(app)
+        .post('/api/articles')
+        .send({title: 'test title', body: 'test body', topic: 'mitch', username: 'invalidUsername'})
+        .expect(404)
+        .then(({body}) => {
+            expect(body.message).toBe('Username not found')
+        })
+    })
+    test('if title, body, topic or username is missing, returns 400 bad request', () => {
+        return request(app)
+        .post('/api/articles')
+        .send({title: 'test title', body: 'test body', username: 'butter_bridge'})
+        .expect(400)
+        .then(({body}) => {
+            expect(body.message).toBe('Bad request')
+        })
+    })
+    test('if wrong data type is passed, returns 400 bad request', () => {
+        return request(app)
+        .post('/api/articles')
+        .send({title: 'test title', body: 'test body', topic: 'mitch', username: 1})
+        .expect(400)
+        .then(({body}) => {
+            expect(body.message).toBe('Bad request')
+        })
+    })
+
 })
