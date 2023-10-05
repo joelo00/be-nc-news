@@ -421,4 +421,70 @@ describe('tests for get /api/users/:username', () => {
 })
 
 
-
+describe.only('tests for patch /api/comments/:comment_id', () => {
+    test('if inc votes is not included in the request body, returns code 200 and responds with unchanged comment object', () => {
+        return request(app)
+        .patch('/api/comments/1')
+        .send({})
+        .expect(200)
+        .then((result) => {
+            const {comment} = result.body
+            expect(comment.votes).toBe(16)
+        })
+    })
+    test('returns status code 200 and responds with updated comment object', () => {
+        return request(app)
+        .patch('/api/comments/1')
+        .send({inc_votes: 1})
+        .expect(200)
+        .then((result) => {
+            const {comment} = result.body
+            expect(comment.votes).toBe(17)
+        })
+    })
+    test('negative votes decrements votes', () => {
+        return request(app)
+        .patch('/api/comments/1')
+        .send({inc_votes: -1})
+        .expect(200)
+        .then((result) => {
+            const {comment} = result.body
+            expect(comment.votes).toBe(15)
+        })
+    })
+    test('if inc votes is a negative number greater than the current votes, returns code 400 bad request', () => {
+        return request(app)
+        .patch('/api/comments/1')
+        .send({inc_votes: -17})
+        .expect(400)
+        .then(({body}) => {
+            expect(body.message).toBe('Bad Request')
+        })
+    })
+    test('if inc votes is not a number, returns code 400 bad request', () => {
+        return request(app)
+        .patch('/api/comments/1')
+        .send({inc_votes: 'not a number'})
+        .expect(400)
+        .then(({body}) => {
+            expect(body.message).toBe('Bad Request')
+        })
+    })
+    test('if given invalid comment id, returns code 400 bad request', () => {
+        return request(app)
+        .patch('/api/comments/invalidCommentID')
+        .send({inc_votes: 1})
+        .expect(400)
+        .then(({body}) => {
+            expect(body.message).toBe('Bad Request')
+        })
+    })
+    test('when given a comment id that is not in the database, returns status code 404', () => {
+        return request(app)
+        .delete('/api/comments/999')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.message).toBe('Comment id not found')
+        })
+    })
+})
