@@ -74,4 +74,15 @@ async function amendArticleById(article_id, inc_votes = 0) {
     });
 }
 
-module.exports = { fetchArticleById, fetchArticles, fetchCommentsOnArticle, amendArticleById, addCommentToArticle };
+async function addArticle(title = 0, body = 0, topic = 0, username = 0) {
+    if (!title || !body || !topic || !username) return Promise.reject({ status: 400, message: 'Bad request' })
+    if (typeof title !== 'string' || typeof body !== 'string' || typeof topic !== 'string' || typeof username !== 'string') return Promise.reject({ status: 400, message: 'Bad request' })
+    const validUsernames = await db.query(`SELECT username FROM users;`).then((users) => {
+        return users.rows.map((user) => user.username);
+    });
+    if (!validUsernames.includes(username)) return Promise.reject({ status: 404, message: 'Username not found' })
+    return db.query(`INSERT INTO articles (title, body, topic, author) VALUES ($1, $2, $3, $4) RETURNING *;`, [title, body, topic, username]).then((article) => {
+        return article.rows[0]
+    })
+}
+module.exports = { fetchArticleById, fetchArticles, fetchCommentsOnArticle, amendArticleById, addCommentToArticle, addArticle };

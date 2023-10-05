@@ -1,5 +1,5 @@
 const { log } = require('console')
-const {fetchArticleById, fetchArticles, fetchCommentsOnArticle, amendArticleById, addCommentToArticle} = require('../models/articles.models.js')
+const {fetchArticleById, fetchArticles, fetchCommentsOnArticle, amendArticleById, addCommentToArticle, addArticle} = require('../models/articles.models.js')
 
 function getArticleById(req, res, next) {
    const { article_id } = req.params
@@ -44,5 +44,13 @@ function patchArticleById (req, res, next) {
     .catch(next)
 }
 
-module.exports = { getArticleById, getArticles, getCommentsOnArticle, patchArticleById, postCommentOnArticle }
+function postArticle(req, res, next) {
+    const {title, body, topic, username} = req.body
+    addArticle(title, body, topic, username).then((article) => {
+        res.status(201).send({article})
+    })
+    .catch(next)
+}
+
+module.exports = { getArticleById, getArticles, getCommentsOnArticle, patchArticleById, postCommentOnArticle, postArticle }
 
