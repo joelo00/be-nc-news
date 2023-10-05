@@ -146,6 +146,16 @@
         "votes": 0
       }
     }
+  },
+  "POST /api/topics": {
+    "description": "posts a new topic to topic database",
+    "queries": [{"slug": "test slug", "description": "test description"}],
+    "exampleResponse": {
+      "topic": {
+        "slug": "test slug",
+        "description": "test description"
+      }
+    }
   }
   
 

@@ -607,3 +607,33 @@ describe('tests for post /api/articles', () => {
 
 })
 
+describe.only('tests for POST /api/topics', () => {
+    test('returns status code 201 and responds with the posted topic', () => {
+        return request(app)
+        .post('/api/topics')
+        .send({slug: 'testSlug', description: 'test description'})
+        .expect(201)
+        .then((result) => {
+            const {topic} = result.body
+            expect(topic).toMatchObject({ slug: 'testSlug', description: 'test description'})
+        })
+    })
+    test('if slug or description is missing, returns 400 bad request', () => {
+        return request(app)
+        .post('/api/topics')
+        .send({slug: 'testSlug'})
+        .expect(400)
+        .then(({body}) => {
+            expect(body.message).toBe('Bad request')
+        })
+    })
+    test('if wrong data type is passed, returns 400 bad request', () => {
+        return request(app)
+        .post('/api/topics')
+        .send({slug: 'testSlug', description: 1})
+        .expect(400)
+        .then(({body}) => {
+            expect(body.message).toBe('Bad request')
+        })
+    })
+})
