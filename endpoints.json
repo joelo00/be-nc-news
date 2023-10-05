@@ -117,6 +117,20 @@
         
       }
     }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "increments a given comment's vote property by the amount specified in the request body",
+    "queries": [{ "comment_id": 1, "inc_votes": 1 }],
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 1,
+        "author": "butter_bridge",
+        "article_id": 9,
+        "votes": 17,
+        "created_at": 1594329060000,
+        "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"
+      }
+    }
   }
   
 
