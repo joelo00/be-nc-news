@@ -607,7 +607,7 @@ describe('tests for post /api/articles', () => {
 
 })
 
-describe.only('tests for POST /api/topics', () => {
+describe('tests for POST /api/topics', () => {
     test('returns status code 201 and responds with the posted topic', () => {
         return request(app)
         .post('/api/topics')
@@ -634,6 +634,39 @@ describe.only('tests for POST /api/topics', () => {
         .expect(400)
         .then(({body}) => {
             expect(body.message).toBe('Bad request')
+        })
+    })
+})
+
+describe.only('tests for delete /api/articles/:article_id', () => {
+    test('returns status 204 and deletes the article from the database', async () => {
+        const response = await request(app).delete('/api/articles/1').expect(204);
+        const {body} = response
+        expect(body).toEqual({})
+        return request(app)
+        .get('/api/articles/1')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.message).toBe('Article id not found')
+        })
+    })
+    test('deletes all comments associated with the article', async () => {
+        const response = await request(app).delete('/api/articles/1').expect(204);
+        const {body} = response
+        expect(body).toEqual({})
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.message).toBe('Article id not found')
+        })
+    })
+    test('given an invalid article_id, returns status code 400 bad request and responds with error message', () => {
+        return request(app)
+        .delete('/api/articles/invalidArticleID')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.message).toBe('Bad Request')
         })
     })
 })

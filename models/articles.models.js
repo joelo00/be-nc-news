@@ -88,4 +88,16 @@ async function addArticle(title = 0, body = 0, topic = 0, username = 0) {
         return article.rows[0]
     })
 }
-module.exports = { fetchArticleById, fetchArticles, fetchCommentsOnArticle, amendArticleById, addCommentToArticle, addArticle };
+
+async function removeArticleById(article_id) {
+    if (isNaN(+article_id)) return Promise.reject({ status: 400, message: 'Bad Request' })
+    const validArticleIDs = await db.query(`SELECT article_id FROM articles;`).then((articles) => {
+        return articles.rows.map((article) => article.article_id);
+    })
+    if (!validArticleIDs.includes(Number(article_id))) return Promise.reject({ status: 404, message: 'Article id not found' })
+    return db.query(`DELETE FROM comments WHERE article_id = $1;`, [article_id]).then(() => {
+        return db.query(`DELETE FROM articles WHERE article_id = $1;`, [article_id])
+    })
+}
+
+module.exports = { fetchArticleById, fetchArticles, fetchCommentsOnArticle, amendArticleById, addCommentToArticle, addArticle, removeArticleById };
