@@ -156,6 +156,13 @@
         "description": "test description"
       }
     }
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "deletes an article and all comments by its id",
+    "queries": [],
+    "exampleResponse": {
+      "status": 204
+    }
   }
   
 
