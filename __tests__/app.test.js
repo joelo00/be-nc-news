@@ -109,7 +109,7 @@ describe('testing for get /api/articles/:article_id', () => {
 
 describe('tests for GET /api/articles/:article_id/comments.', () => {
     test('returns status code 200 and responds with an array of comments for the given article_id', async () => {
-        const response = await request(app).get('/api/articles/1/comments').expect(200);
+        const response = await request(app).get('/api/articles/1/comments?limit=100').expect(200);
         const {comments} = response.body
         expect(comments.length).toBe(11)
         comments.forEach((comment) => {
@@ -154,9 +154,42 @@ describe('tests for GET /api/articles/:article_id/comments.', () => {
             expect(body.comments).toEqual([])
         })
     })
+    describe('pagination tests', () => {
+        test('if neither p nor limit are specified, returns first 10 comments', () => {
+            return request(app)
+            .get('/api/articles/1/comments?sort_by=comment_id&order=asc')
+            .expect(200)
+            .then((result) => {
+                const {comments} = result.body
+                expect(comments.length).toBe(10)
+                expect(comments[0].comment_id).toBe(2)
+                expect(comments[9].comment_id).toBe(13)
+            })
+        })
+        test('if p is specified and limit is given, returns correct amount of comments starting at given page', () => {
+            return request(app)
+            .get('/api/articles/1/comments?sort_by=comment_id&order=asc&p=2&limit=3')
+            .expect(200)
+            .then((result) => {
+                const {comments} = result.body
+                expect(comments.length).toBe(3)
+                expect(comments[0].comment_id).toBe(5)
+                expect(comments[2].comment_id).toBe(7)
+                
+            })
+        })
+        test('if p or limmit are not valid numbers, returns status code 400 bad request', () => {
+            return request(app)
+            .get('/api/articles/1/comments?sort_by=comment_id&order=asc&p=invalidPage&limit=3')
+            .expect(400)
+            .then(({body}) => {
+                expect(body.message).toBe('Bad Request')
+            })
+        })
+    })
 })
 
-describe.only('tests for get /api/articles', () => {
+describe('tests for get /api/articles', () => {
     test('returns status code 200 and an array of articles with correct properties', () => {
         return request(app)
         .get('/api/articles')
@@ -256,7 +289,7 @@ describe.only('tests for get /api/articles', () => {
             .expect(200)
             .then((result) => {
                 const {articles} = result.body
-                expect(articles.length).toBe(3) //because only 3 in databse
+                expect(articles.length).toBe(3)
                 expect(articles[0].article_id).toBe(4)
                 expect(articles[2].article_id).toBe(6)
                 
@@ -319,6 +352,7 @@ describe('POST /api/articles/:article_id/comments', () => {
             expect(body.message).toBe('Article id not found')
         })
     })
+
 })
 
 describe('tests for delete /api/comments/:comment_id', () => {
