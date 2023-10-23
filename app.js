@@ -1,4 +1,5 @@
 const express = require('express')
+const cors = require('cors')
 const { handleMispelledPath, handleCustomErrors, handleSQLErrors, handle500erros} = require('./controllers/errors-controllers.js')
 const apiRouter = require('./routes/api-router.js')
 const articlesRouter = require('./routes/articles-router.js')
@@ -7,7 +8,7 @@ const topicsRouter = require('./routes/topics-router.js')
 const commentsRouter = require('./routes/comments-router.js')
 const app = express()
 app.use(express.json())
-
+app.use(cors())
 app.use('/api', apiRouter);
 
 app.use('/api/articles', articlesRouter)
